@@ -16,7 +16,13 @@ export class TDLService {
   async findAll(): Promise<TDL[]> {
     return await this.tdlRepository.find();
   }
-
+  async read(id: number): Promise<TDL>{
+    return await this.tdlRepository.findOne({
+      where: {
+        id,
+      },
+    });
+  }
   async create(tdlDto: TDLDto){
     const tdlEntity = new TDL();
     tdlEntity.task = tdlDto.task;
@@ -24,15 +30,16 @@ export class TDLService {
     const tdl = this.tdlRepository.create(tdlEntity);
     await this.tdlRepository.save(tdl);
     return tdl;
-
-
   }
-  
-  findOne(id: number): Promise<TDL | null> {
-    return this.tdlRepository.findOneBy({ id });
+  async update(id: number, data: Partial<TDLDto>){
+    await this.tdlRepository.update({ id }, data);
+    const tdl = this.tdlRepository.findOne({where: { id }});
+    return tdl;
   }
 
-  async remove(id: number): Promise<void> {
-    await this.tdlRepository.delete(id);
+  async delete(id: number){
+    const tdl = await this.tdlRepository.findOne({where: {id}})
+    await this.tdlRepository.delete({ id });
+    return tdl;
   }
 }
